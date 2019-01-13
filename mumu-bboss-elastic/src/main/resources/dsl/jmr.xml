@@ -1,0 +1,76 @@
+<properties>
+    <property name="groupByMalwareBehaviorType">
+        <![CDATA[
+            {
+              "size": 0,
+              "aggs": {
+                "ipCouner": {
+                  "terms": {
+                    "field": "malware_behavior_type",
+                    "size":  #[count]
+                  }
+                }
+              }
+            }
+        ]]>
+    </property>
+
+    <!--时间趋势-->
+    <property name="eventTrend">
+        <![CDATA[
+            {
+              "size" : 0,
+              "query" : {
+                "term" : {
+                  "province_name" : {
+                    "value" : #[provinceName],
+                    "boost" : 1.0
+                  }
+                }
+              },
+              "aggregations" : {
+                "trendAggregation" : {
+                  "date_histogram" : {
+                    "field" : "event_time",
+                    "interval" : #[interval],
+                    "offset" : 0,
+                    "order" : {
+                      "_key" : "desc"
+                    },
+                    "keyed" : false,
+                    "min_doc_count" : 0
+                  }
+                }
+              }
+            }
+        ]]>
+    </property>
+
+    <property name="searchPagineDatas">
+        <![CDATA[
+        {
+            "query": {
+                "bool": {
+                    "filter": [
+                        {
+                            "term": {
+                                "province_name": #[provinceName]
+                            }
+                        },
+                        {
+                            "range": {
+                                "event_time": {
+                                    "gte": #[startTime],
+                                    "lt": #[endTime]
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            "from":#[from],
+            "size":#[size]
+        }
+        ]]>
+    </property>
+</properties>
